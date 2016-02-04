@@ -16,7 +16,6 @@
 	  <property name="classes"        		location="classes"/> 
 	  <property name="lib"        			location="lib"/>
 	  <property name="distrib"        		location="distrib"/>
-	  <property name="libext"     			location="${deploy.dest}/libext"/>
 	  <property name="libkettle"     		location="${deploy.dest}/lib"/>
 	  <property name="libswt"     			location="${deploy.dest}/libswt"/>
 	
@@ -44,7 +43,6 @@
 
 	    	<classpath id="cpath">
 				<fileset dir="${birt.reportengine.dir}/lib" 		includes="*.jar"/>
-                <fileset dir="${libext}"        includes="**/*.jar"/>
 				<fileset dir="${libkettle}" 	includes="*.jar"/>
 				<fileset dir="${libswt}" 		includes="*.jar"/>
 				<fileset dir="${libswt}/win32/" includes="*.jar"/>
@@ -88,12 +86,9 @@
 
 	  <target name="distrib" depends="lib" description="Create the distribution package..." >
 	  	<echo>Copying libraries to distrib directory...</echo>
-	    <!--copy todir="${distrib}/lib"> <fileset dir="${libext}" includes="**/*.jar"/> </copy-->
 	    <copy todir="${distrib}"> <fileset file="${lib}/BIRT-plugin.jar"/> </copy>
         <copy todir="${distrib}/resources"> <fileset file="${src}/bi/know/pentaho/birt/images/birt.png"/> </copy>
-        <!--copy todir="${distrib}/configuration"><fileset dir="${birt.reportengine.dir}/configuration" /></copy-->
         <copy todir="${distrib}/lib"><fileset dir="${birt.reportengine.dir}/lib" /></copy>
-        <!--copy todir="${distrib}/plugins"><fileset dir="${birt.reportengine.dir}/plugins" /></copy-->
 
       </target>
 
@@ -133,7 +128,7 @@
 
 
     <target name="deploy" depends="distrib" >
-        <copy todir="${deploy.dest}/plugins/steps/BIRTOutput" >
+        <copy todir="${deploy.dest}/plugins/BIRTOutput" >
             <fileset dir="distrib" />
         </copy>
         <copy todir="${deploy.dest}/samples/transformations" >
