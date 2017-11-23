@@ -101,7 +101,7 @@
 	  <target name="zip" depends="distrib" description="generate the Pentaho Reporting Plugin zip archive">
 	  	<echo>Generating the BIRT Report library PentahoBIRTOutput.zip ...</echo>
 	  	<zip destfile="zip/PentahoBIRTOutput.zip" update="true">
-              <zipfileset dir="distrib" prefix="plugins/steps/BIRTOutput"/>
+              <zipfileset dir="distrib" prefix="plugins/BIRTOutput"/>
               <zipfileset dir="samples" prefix="samples/transformations" />
           </zip>
 	  </target>

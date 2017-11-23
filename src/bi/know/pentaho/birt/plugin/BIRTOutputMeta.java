@@ -31,15 +31,16 @@ import org.w3c.dom.Node;
 
 
 @Step(
-    id = "BIRTReportOutput",
+    id = "BIRTReportOutput,BIRTOutput",
     image = "bi/know/pentaho/birt/images/birt.png",
     description = "BIRTReportOutput.Description",
-    name = "BIRTReportOutput.Name",
-    categoryDescription = "BIRTReportOutput.Category",
-    i18nPackageName = "bi.know.pentaho.birt.plugin"
+    name = "BIRTOutput.Name",
+    categoryDescription = "BIRTOutput.Category",
+    i18nPackageName = "bi.know.pentaho.birt.plugin",  
+    isSeparateClassLoaderNeeded=false
 )
 public class BIRTOutputMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = BIRTOutput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = BIRTOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   public enum ProcessorType {
     PDF("PDF", "PDF"), 

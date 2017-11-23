@@ -1,4 +1,7 @@
 .project
+.classpath
+.settings/
 classes/
 distrib/
+target/
 lib/

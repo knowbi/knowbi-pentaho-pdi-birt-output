@@ -3,9 +3,12 @@ package bi.know.pentaho.birt.plugin;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import org.eclipse.birt.core.exception.BirtException;
+import org.eclipse.birt.core.framework.IPlatformContext;
 import org.eclipse.birt.core.framework.Platform;
+import org.eclipse.birt.core.framework.PlatformFileContext;
 import org.eclipse.birt.report.engine.api.EngineConfig;
 import org.eclipse.birt.report.engine.api.HTMLRenderOption;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
@@ -23,7 +26,6 @@ import org.eclipse.birt.report.engine.api.PDFRenderOption;
 import org.eclipse.birt.report.engine.api.RenderOption;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -91,7 +93,6 @@ public class BIRTOutput extends BaseStep implements StepInterface {
 						meta.getOutputFileField()));
 			}
 
-			performBIRTReportingBoot(log, getClass());
 		}
 
 		String sourceFilename = getInputRowMeta().getString(r,
@@ -113,25 +114,27 @@ public class BIRTOutput extends BaseStep implements StepInterface {
 		return result;
 	}
 
-	public static void performBIRTReportingBoot(LogChannelInterface log,
-			Class<?> referenceClass) {
-
+	public boolean init(StepMetaInterface smi, StepDataInterface sdi){
 		// Boot the BIRT reporting engine.
 		try {
-			String birtHomeStr = System.getProperty("user.dir") + System.getProperty("file.separator") + "plugins/steps/BIRTOutput/";
-			String birtHome = birtHomeStr;
-			String resourcePath = "";
+			String birtHomeStr = System.getProperty("user.dir") + System.getProperty("file.separator") + "plugins/BIRTOutput/";
+//			String birtHome = birtHomeStr;
+//			String resourcePath = "";
 			EngineConfig config = new EngineConfig();
-			config.setEngineHome(birtHome);
-			config.setResourcePath(resourcePath);
-			
+			config.setLogConfig("/tmp", Level.ALL);			
 			Platform.startup(config);
-
-			IReportEngineFactory factory = (IReportEngineFactory) Platform
-					.createFactoryObject(IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
+			config.setEngineHome("");
+			
+			IPlatformContext context = new PlatformFileContext();
+			config.setPlatformContext( context );			
+			
+			IReportEngineFactory factory = (IReportEngineFactory)Platform.createFactoryObject(IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
 			engine = factory.createReportEngine(config);
+			
+		    return super.init(smi, sdi);
 		} catch (BirtException be) {
 			be.printStackTrace();
+			return false;
 		}
 	}
 
@@ -215,9 +218,9 @@ public class BIRTOutput extends BaseStep implements StepInterface {
 			case PDF:
 				options.setOutputFormat("pdf");
 				PDFRenderOption pdfOptions = new PDFRenderOption(options);
-				pdfOptions.setOption(IPDFRenderOption.FIT_TO_PAGE, true);
-				pdfOptions.setOption(
-						IPDFRenderOption.PAGEBREAK_PAGINATION_ONLY, true);
+				pdfOptions.setOption(IPDFRenderOption.PAGE_OVERFLOW, "OUTPUT_TO_MULTIPLE_PAGES");
+				//pdfOptions.setOption(IPDFRenderOption.FIT_TO_PAGE, true);
+				//pdfOptions.setOption(IPDFRenderOption.PAGEBREAK_PAGINATION_ONLY, true);
 				break;
 			case HTML:
 				options.setOutputFormat("html");

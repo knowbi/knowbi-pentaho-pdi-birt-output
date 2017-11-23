@@ -305,16 +305,6 @@ public class BIRTOutputDialog extends BaseStepDialog implements StepDialogInterf
 	private void get() {
 	  
 	  Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
-
-      // See if we need to boot the reporting engine. Since this takes time we do it in the background...
-      //
-	  Runnable runnable = new Runnable() {
-	    public void run() {
-	        BIRTOutput.performBIRTReportingBoot(log, input.getClass());
-	    }
-	  };
-	  Thread thread = new Thread(runnable);
-	  thread.start();
 	  
 	  try {
 	    // Browse for a PRPT...
@@ -334,8 +324,6 @@ public class BIRTOutputDialog extends BaseStepDialog implements StepDialogInterf
         );
         
         if (dialog.open()==null) return;
-
-        thread.join();        
 
         String sourceFilename = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
         lastFilename=sourceFilename;
