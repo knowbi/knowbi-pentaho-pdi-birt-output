@@ -1,8 +1,15 @@
 
 package bi.know.pentaho.birt.plugin;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.logging.Level;
 
 import org.eclipse.birt.core.exception.BirtException;
@@ -53,6 +60,9 @@ public class BIRTOutput extends BaseStep implements StepInterface {
 
 	public static IReportEngine engine;
 	private IScalarParameterDefn scalar;
+	
+	private Properties birtProps = new Properties();
+	private InputStream birtStream = null; 
 
 	public BIRTOutput(StepMeta stepMeta, StepDataInterface stepDataInterface,
 			int copyNr, TransMeta transMeta, Trans trans) {
@@ -118,10 +128,19 @@ public class BIRTOutput extends BaseStep implements StepInterface {
 		// Boot the BIRT reporting engine.
 		try {
 			String birtHomeStr = System.getProperty("user.dir") + System.getProperty("file.separator") + "plugins/BIRTOutput/";
-//			String birtHome = birtHomeStr;
-//			String resourcePath = "";
 			EngineConfig config = new EngineConfig();
-			config.setLogConfig("/tmp", Level.ALL);			
+			
+			birtStream = getClass().getClassLoader().getResourceAsStream("plugins/BIRTOutput/birt.properties");
+			birtProps.load(birtStream); 
+			
+			String logDir = birtProps.getProperty("logging.dir");
+			String logLevel = birtProps.getProperty("logging.level");
+			
+			System.out.println("logging dir: " + logDir);
+			System.out.println("logging dir: " + logLevel);
+			
+//			config.setLogConfig("/tmp", Level.ALL);
+			config.setLogConfig(logDir, Level.parse(logLevel));
 			Platform.startup(config);
 			config.setEngineHome("");
 			
@@ -132,7 +151,10 @@ public class BIRTOutput extends BaseStep implements StepInterface {
 			engine = factory.createReportEngine(config);
 			
 		    return super.init(smi, sdi);
-		} catch (BirtException be) {
+		}catch(IOException ioe){
+			ioe.printStackTrace();
+			return false;
+		}catch (BirtException be) {
 			be.printStackTrace();
 			return false;
 		}
